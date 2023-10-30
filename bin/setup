@@ -12,8 +12,8 @@ cd supabase/docker
 cp .env.example .env
 
 # Pull the latest images
-docker compose pull
+sudo docker compose pull
 
 # Start the services (in detached mode)
-docker compose up -d
+sudo docker compose up -d
 
