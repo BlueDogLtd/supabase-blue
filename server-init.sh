@@ -7,6 +7,12 @@ sudo apt-get install -y build-essential cmake apt-transport-https \
   ca-certificates curl gnupg2 wget software-properties-common dirmngr unzip \
   git expect jq lsb-release ufw
 
+# Install python
+if ! command -v python3 &> /dev/null; then
+    echo "Python3 not found! Installing..."
+    sudo apt-get install -y python3
+fi
+
 # Install docker
 curl -fsSL https://download.docker.com/linux/debian/gpg \
   | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
