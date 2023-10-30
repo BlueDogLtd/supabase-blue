@@ -1,2 +1,2 @@
 # supabase
-Self-hosted Supabase Instace: an open-source BaaS (Firebase alternative) 
+Self-hosted Supabase Instance: an open-source BaaS (Firebase alternative) 
