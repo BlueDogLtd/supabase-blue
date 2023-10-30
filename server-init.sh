@@ -13,6 +13,12 @@ if ! command -v python3 &> /dev/null; then
     sudo apt-get install -y python3
 fi
 
+# Check for pip3 and install if not found
+if ! command -v pip3 &> /dev/null; then
+    echo "pip3 not found! Installing..."
+    sudo apt-get install -y python3-pip
+fi
+
 # Install docker
 curl -fsSL https://download.docker.com/linux/debian/gpg \
   | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg

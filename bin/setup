@@ -1,6 +1,17 @@
 #!/bin/bash
 
+# Read the .config file name from the 'config' file
+CONFIG_FILE=$(cat ../config)
+
+# Check if the CONFIG_FILE and .env files exist
+if [[ ! -f "$CONFIG_FILE" ]]; then
+    echo "Config file $CONFIG_FILE does not exist."
+    exit 1
+fi
+
 cd ../src
+
+echo "Setting up Supabase...\n"
 
 # Get the code
 git clone --depth 1 https://github.com/supabase/supabase
@@ -16,4 +27,34 @@ sudo docker compose pull
 
 # Start the services (in detached mode)
 sudo docker compose up -d
+ 
+echo "Supabase running\n"
+
+echo "Securing services...\n"
+
+echo "Updating supabase/docker/.env from config\n"
+
+
+if [[ ! -f .env ]]; then
+    echo ".env file does not exist."
+    exit 1
+fi
+
+# Iterate over the lines in the .config file
+while IFS= read -r line; do
+    # Split each line into KEY and VALUE parts
+    KEY="${line%=*}"
+    VALUE="${line#*=}"
+
+    # Check if the key exists in the .env file
+    if grep -q "^$KEY=" .env; then
+        # If it does, replace its value
+        sed -i "s/^$KEY=.*/$KEY=$VALUE/" .env
+    else
+        # Otherwise, append the key-value pair to the .env file
+        echo "$KEY=$VALUE" >> .env
+    fi
+done < "$CONFIG_FILE"
+
+echo "Services secured. Restarting services...\n"
 
