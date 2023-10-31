@@ -1,5 +1,5 @@
 # supabase-blue
-Package to setup and manage a self-hosted Supabase Instance: an open-source BaaS (Firebase alternative) 
+Package to set up and manage a self-hosted Supabase instance: an open-source BaaS (Firebase alternative) 
 
 ## Usage
 1. On a debian VM, pull this repo and run server-init.sh to install preliminary tools.
