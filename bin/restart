@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd ../src/supabase/docker
+
+sudo docker compose restart 

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cd ../src/supabase/docker/
+
+# Stop docker and remove volumes:
+docker compose down -v
+
+# Remove Postgres data:
+rm -rf volumes/db/data/

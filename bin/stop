@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd ../src/supabase/docker/ || exit
+
+sudo docker compose stop
