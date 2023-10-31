@@ -1,23 +1,14 @@
 #!/bin/bash
 
-# Read the .config file name from the 'config' file
-CONFIG_FILE=$(cat ../config)
+#set -x
 
-# Check if the CONFIG_FILE and .env files exist
-if [[ ! -f "$CONFIG_FILE" ]]; then
-    echo "Config file $CONFIG_FILE does not exist."
-    exit 1
-fi
+cd ../src || exit
 
-cd ../src
+printf "Setting up Supabase...\n"
 
-echo "Setting up Supabase...\n"
-
-# Get the code
 git clone --depth 1 https://github.com/supabase/supabase
 
-# Go to the docker folder
-cd supabase/docker
+cd supabase/docker || exit
 
 # Copy the fake env vars
 cp .env.example .env
@@ -27,34 +18,89 @@ sudo docker compose pull
 
 # Start the services (in detached mode)
 sudo docker compose up -d
- 
-echo "Supabase running\n"
 
-echo "Securing services...\n"
+printf "Supabase running\n"
 
-echo "Updating supabase/docker/.env from config\n"
-
+#Secure services
 
 if [[ ! -f .env ]]; then
-    echo ".env file does not exist."
+    echo "Could not locate src/supabase/docker/.env"
     exit 1
 fi
 
-# Iterate over the lines in the .config file
-while IFS= read -r line; do
-    # Split each line into KEY and VALUE parts
-    KEY="${line%=*}"
-    VALUE="${line#*=}"
+printf "Securing Supabase: Updating default config.\n"
 
+while true; do
+    read -r -p "Enter JWT secret or auto-generate? (enter/autogen): " user_choice
+
+    case $user_choice in
+    "enter")
+        echo "Please enter JWT secret:"
+        read -r jwt_secret
+        break
+        ;;
+    "autogen")
+        printf "Auto-generating JWT secret...\n"
+        jwt_secret=$(openssl rand -base64 32)
+        break
+        ;;
+    *)
+        echo "Invalid choice! Please try again."
+        ;;
+    esac
+done
+
+source "../../../config"
+
+anon_key=$(python3 "$BASE_PATH/bin/generate_anon_key.py" "$jwt_secret")
+
+service_role_key=$(python3 "$BASE_PATH/bin/generate_service_role_key.py" "$jwt_secret")
+
+printf "Enter Database password\n"
+read -r db_password
+
+printf "Enter Supabase Dashboard Username\n"
+read -r dashboard_username
+
+printf "Enter Supabase Dashboard Password\n"
+read -r dashboard_password
+
+printf "Enter Site URL\n"
+read -r site_url
+
+printf "Securing services: Updating supabase/docker/.env\n"
+
+ENV_FILE="./.env"
+
+# Declare an associative array with the key-value pairs you're interested in
+declare -A key_values=(
+    ["JWT_SECRET"]=$jwt_secret
+    ["ANON_KEY"]=$anon_key
+    ["SERVICE_ROLE_KEY"]=$service_role_key
+    ["POSTGRES_PASSWORD"]=$db_password
+    ["DASHBOARD_USERNAME"]=$dashboard_username
+    ["DASHBOARD_PASSWORD"]=$dashboard_password
+    #["SITE_URL"]=$site_url
+    ["API_EXTERNAL_URL"]=$site_url
+    ["SUPABASE_PUBLIC_URL"]=$site_url
+)
+
+# Iterate through the keys in the associative array
+for key in "${!key_values[@]}"; do
     # Check if the key exists in the .env file
-    if grep -q "^$KEY=" .env; then
+    if grep -q "^$key=" "$ENV_FILE"; then
         # If it does, replace its value
-        sed -i "s/^$KEY=.*/$KEY=$VALUE/" .env
+        sed -i "s|^$key=.*|$key=${key_values[$key]}|" "$ENV_FILE"
     else
         # Otherwise, append the key-value pair to the .env file
-        echo "$KEY=$VALUE" >> .env
+        echo "$key=${key_values[$key]}" >>"$ENV_FILE"
     fi
-done < "$CONFIG_FILE"
+done
 
-echo "Services secured. Restarting services...\n"
+printf "Services secured. Restarting services...\n"
 
+sudo docker compose restart
+
+printf "Setup Complete\n"
+
+exit 0

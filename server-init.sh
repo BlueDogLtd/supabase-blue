@@ -19,6 +19,10 @@ if ! command -v pip3 &> /dev/null; then
     sudo apt-get install -y python3-pip
 fi
 
+#Python libs
+pip install pyjwt
+
+
 # Install docker
 curl -fsSL https://download.docker.com/linux/debian/gpg \
   | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
