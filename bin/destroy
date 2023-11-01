@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ../src/supabase/docker/
+cd ../src/supabase/docker/ || exit
 
 # Stop docker and remove volumes:
 docker compose down -v
