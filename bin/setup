@@ -16,11 +16,6 @@ cp .env.example .env
 # Pull the latest images
 sudo docker compose pull
 
-# Start the services (in detached mode)
-sudo docker compose up -d
-
-printf "Supabase running\n"
-
 #Secure services
 
 if [[ ! -f .env ]]; then
@@ -97,9 +92,10 @@ for key in "${!key_values[@]}"; do
     fi
 done
 
-printf "Services secured. Restarting services...\n"
+printf "Services secured. Starting services...\n"
 
-sudo docker compose restart
+# Start the services (in detached mode)
+sudo docker compose up -d
 
 printf "Setup Complete\n"
 
