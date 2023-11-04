@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#install psql: 
+sudo apt-get install postgresql-client 
+
+HOST=$(hostname -I | awk '{print $1}')
+
+cd ../backups || exit
+
+#pg_dump can be run without docker but there may be version mismatch between pg client and pg server. 
+#Specify your postgres version as postgres:ver.no. Postgres user must be superuser (default: supabase_admi) to access all schemas. 
+docker run --rm -it -v "${PWD}":/tmp postgres:15 pg_dump -h "$HOST" -p 5432 -U supabase_admin -W -F c -b -v -f "/tmp/supabase_dump.dump" postgres

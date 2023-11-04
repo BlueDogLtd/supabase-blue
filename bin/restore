@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd ../backups || exit
+
+pg_restore -h 127.0.0.1 -p 5432 -U supabase_admin -d postgres -W -v ./supabase_dump.dump
