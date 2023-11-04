@@ -1,5 +1,16 @@
 #!/bin/bash
 
+printf "Confirm destroy service? (Y/N)\n"
+read -r confirm
+
+if [[ $confirm =~ ^[Yy]$ ]]; then
+    echo "Continuing with script..."
+    # Place the rest of your script here
+else
+    echo "Exiting script."
+    exit 0
+fi
+
 cd ../src/supabase/docker/ || exit
 
 # Stop docker and remove volumes:
@@ -7,3 +18,5 @@ docker compose down -v
 
 # Remove Postgres data:
 rm -rf volumes/db/data/
+
+exit 0

@@ -2,4 +2,8 @@
 
 cd ../src/supabase/docker/ || exit
 
+printf "Stopping Supabase...\n"
+
 sudo docker compose stop
+
+exit 0

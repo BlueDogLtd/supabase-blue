@@ -1,5 +1,9 @@
 #!/bin/bash
 
-cd ../src/supabase/docker
+cd ../src/supabase/docker || exit
+
+printf "Restarting Supabase...\n"
 
 sudo docker compose restart 
+
+exit 0
