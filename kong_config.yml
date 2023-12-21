@@ -23,17 +23,18 @@ _transform: true
 # Each Kong entity (core entity or custom entity introduced by a plugin)
 # can be listed in the top-level as an array of objects:
 
-# services:
-# - name: example-service
-#   url: http://example.com
+ services:
+ - name: edge-runtime-service
+   url: http://0.0.0.0:6432
 #   # Entities can store tags as metadata
 #   tags:
 #   - example
 #   # Entities that have a foreign-key relationship can be nested:
-#   routes:
-#   - name: example-route
-#     paths:
-#     - /
+   routes:
+   - name: edge-runtime-route
+     service: edge-runtime-service
+     paths:
+     - /api
 #   plugins:
 #   - name: key-auth
 # - name: another-service
